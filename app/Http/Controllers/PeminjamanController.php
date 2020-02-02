@@ -128,13 +128,14 @@ class PeminjamanController extends Controller
 
   public function update($id, Request $req)
   {
+    if(Auth::user()->level=="petugas"){
     $validator=Validator::make($req->all(), [
       'id_anggota' => 'required',
       'id_petugas' => 'required',
       'tgl_pinjam' => 'required',
       'deadline' => 'required',
       'tgl_kembali' => 'required',
-      'denda' => 'required'
+      // 'denda' => 'required'
     ]);
     if($validator->fails()){
       return response()->json($validator->errors());
@@ -153,15 +154,63 @@ class PeminjamanController extends Controller
     } else {
       return response()->json(['status'=>0]);
     }
+    } else {
+    return response()->json(['Hanya Petugas yang Bisa Mengakses']);
+    }
+  }
+
+  public function edit($id, Request $req)
+  {
+    if(Auth::user()->level=="petugas"){
+    $validator=Validator::make($req->all(), [
+      'id_peminjaman' => 'required',
+      'id_buku' => 'required',
+      'qty' => 'required',
+    ]);
+    if($validator->fails()){
+      return response()->json($validator->errors());
+    }
+
+    $ubah=DetailPeminjaman_Model::where('id', $id)->update([
+      'id_peminjaman' => $req->id_peminjaman,
+      'id_buku' => $req->id_buku,
+      'qty' => $req->qty,
+    ]);
+    if($ubah){
+      return response()->json(['status'=>1]);
+    } else {
+      return response()->json(['status'=>0]);
+    }
+  } else {
+    return response()->json(['Hanya Petugas yang Bisa Mengakses']);
+  }
   }
 
   public function destroy($id)
   {
+    if(Auth::user()->level=="petugas"){
     $hapus=Peminjaman_Model::where('id', $id)->delete();
     if($hapus){
       return response()->json(['status'=>1]);
     } else {
       return response()->json(['status'=>0]);
     }
+  } else {
+    return response()->json(['Hanya Petugas yang Bisa Mengakses']);
+  }
+  }
+
+  public function hapus($id)
+  {
+    if(Auth::user()->level=="petugas"){
+    $hapus=DetailPeminjaman_Model::where('id', $id)->delete();
+    if($hapus){
+      return response()->json(['status'=>1]);
+    } else {
+      return response()->json(['status'=>0]);
+    }
+  } else {
+    return response()->json(['Hanya Petugas yang Bisa Mengakses']);
+  }
   }
 }
