@@ -70,7 +70,6 @@ class AnggotaController extends Controller
     } else {
       return response()->json(['Hanya Admin yang Bisa Mengakses']);
     }
-
   }
 
   public function destroy($id)
